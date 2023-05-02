@@ -46,7 +46,6 @@ public class SP_API_02_Furkan {
                 .setContentType(ContentType.JSON)
                 .addCookies(cookies)
                 .build();
-
     }
 
     @Test
@@ -79,7 +78,6 @@ public class SP_API_02_Furkan {
         Map<String, String> country = new HashMap<>();
         country.put("name", attestationName);
 
-
         given()
                 .spec(reqSpec)
                 .body(country)
@@ -103,7 +101,6 @@ public class SP_API_02_Furkan {
         attestationName = "frkn" + faker.number().digits(5);
         country.put("name", attestationName);
 
-
         given()
                 .spec(reqSpec)
                 .body(country)
@@ -117,7 +114,6 @@ public class SP_API_02_Furkan {
                 .statusCode(200)
                 .body("name", equalTo(attestationName))
         ;
-
     }
 
 
@@ -136,9 +132,7 @@ public class SP_API_02_Furkan {
                 .then()
                 .log().body() //gelen body i log olarak göster
                 .statusCode(204)
-
         ;
-
     }
 
     @Test(dependsOnMethods = "deleteAttestation")
@@ -156,7 +150,6 @@ public class SP_API_02_Furkan {
                 .log().body() //gelen body i log olarak göster
                 .statusCode(400)
                 .body("message", equalTo("attestation not found"))
-
         ;
     }
 }
