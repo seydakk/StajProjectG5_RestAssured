@@ -21,6 +21,8 @@ public class SP_API_04_Emrah {
     String FieldsName;
     String FieldsCode;
 
+    Map<String, String> Fields;
+
     RequestSpecification reqSpec;
 
     @BeforeClass
@@ -54,7 +56,7 @@ public class SP_API_04_Emrah {
     @Test
     public void createField() {
 
-        Map<String, String> Fields = new HashMap<>();
+        Fields = new HashMap<>();
         FieldsName = faker.name().firstName() + faker.number().digits(2);
         FieldsCode = faker.number().digits(4);
         Fields.put ("name", FieldsName);
@@ -66,29 +68,32 @@ public class SP_API_04_Emrah {
                 given()
                         .spec(reqSpec)
                         .body(Fields)
-                        .log().body()
+                      //  .log().body()
 
                         .when()
                         .post("/school-service/api/entity-field")
 
                         .then()
-                        .log().body()
+                      //  .log().body()
                         .statusCode(201)
                         .extract().path("id");
 
-        System.out.println("countryID = " + FieldsID);
+        System.out.println("FieldsID = " + FieldsID);
     }
 
     @Test(dependsOnMethods = "createField")
     public void createFieldNegative() {
 
-        Map<String, String> country = new HashMap<>();
-        country.put("name", FieldsName);
-
+//        Map<String, String> Fields = new HashMap<>();
+//
+//        Fields.put ("name", FieldsName);
+//        Fields.put ("code", FieldsCode);
+//        Fields.put ("type", "DATE");
+//        Fields.put ("schoolId", "6390f3207a3bcb6a7ac977f9");
 
         given()
                 .spec(reqSpec)
-                .body(country)
+                .body(Fields)
                 .log().body()
 
                 .when()
@@ -104,22 +109,22 @@ public class SP_API_04_Emrah {
     @Test(dependsOnMethods = "createFieldNegative")
     public void updateField () {
 
-        Map<String, String> country = new HashMap<>();
-        country.put("id", FieldsID);
-        FieldsName = "frkn" + faker.number().digits(5);
-        country.put("name", FieldsName);
-
+//        Map<String, String> country = new HashMap<>();
+//        country.put("id", FieldsID);
+        FieldsName = "emrah" + faker.number().digits(5);
+        Fields.put("name", FieldsName);
+        Fields.put("id", FieldsID);
 
         given()
                 .spec(reqSpec)
-                .body(country)
-                //  .log().body()
+                .body(Fields)
+                .log().body()
 
                 .when()
-                .put("/school-service/api/entity-field/{FieldID}")
+                .put("/school-service/api/entity-field")
 
                 .then()
-                .log().body() //gelen body i log olarak göster
+                .log().body()
                 .statusCode(200)
                 .body("name", equalTo(FieldsName))
         ;
@@ -137,7 +142,7 @@ public class SP_API_04_Emrah {
                 .log().uri()
 
                 .when()
-                .delete("/school-service/api/entity-field/{FieldID}")
+                .delete("/school-service/api/entity-field/{FieldsID}")
 
                 .then()
                 .log().body() //gelen body i log olarak göster
@@ -156,12 +161,12 @@ public class SP_API_04_Emrah {
                 .log().uri()
 
                 .when()
-                .delete("/school-service/api/entity-field/{FieldID}")
+                .delete("/school-service/api/entity-field/{FieldsID}")
 
                 .then()
                 .log().body() //gelen body i log olarak göster
                 .statusCode(400)
-                .body("message", equalTo("EntityFields not  found"))
+                .body("message", equalTo("EntityField not found"))
 
         ;
     }
