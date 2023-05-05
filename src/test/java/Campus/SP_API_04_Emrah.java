@@ -19,6 +19,8 @@ public class SP_API_04_Emrah {
     Faker faker = new Faker();
     String FieldsID;
     String FieldsName;
+    String FieldsCode;
+
     RequestSpecification reqSpec;
 
     @BeforeClass
@@ -50,11 +52,15 @@ public class SP_API_04_Emrah {
     }
 
     @Test
-    public void createFields() {
+    public void createField() {
 
         Map<String, String> Fields = new HashMap<>();
-        FieldsName = faker.company().profession() + faker.number().digits(2);
+        FieldsName = faker.name().firstName() + faker.number().digits(2);
+        FieldsCode = faker.number().digits(4);
         Fields.put ("name", FieldsName);
+        Fields.put ("code", FieldsCode);
+        Fields.put ("type", "DATE");
+        Fields.put ("schoolId", "6390f3207a3bcb6a7ac977f9");
 
         FieldsID =
                 given()
@@ -73,8 +79,8 @@ public class SP_API_04_Emrah {
         System.out.println("countryID = " + FieldsID);
     }
 
-    @Test(dependsOnMethods = "createFields")
-    public void createFieldsNegative() {
+    @Test(dependsOnMethods = "createField")
+    public void createFieldNegative() {
 
         Map<String, String> country = new HashMap<>();
         country.put("name", FieldsName);
@@ -120,9 +126,9 @@ public class SP_API_04_Emrah {
 
     }
 
-    @Test(dependsOnMethods = "updateFields")
+    @Test(dependsOnMethods = "updateField")
 
-    public void deleteFields () {
+    public void deleteField () {
 
 
         given()
@@ -141,8 +147,8 @@ public class SP_API_04_Emrah {
 
     }
 
-    @Test(dependsOnMethods = "deleteFields")
-    public void deleteFieldsNegative() {
+    @Test(dependsOnMethods = "deleteField")
+    public void deleteFieldNegative() {
 
         given()
                 .spec(reqSpec)
