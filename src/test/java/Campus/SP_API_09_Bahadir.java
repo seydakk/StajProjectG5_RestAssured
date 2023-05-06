@@ -12,10 +12,8 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.restassured.RestAssured.baseURI;
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
+import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
 
 public class SP_API_09_Bahadir {
 
@@ -27,7 +25,7 @@ public class SP_API_09_Bahadir {
 
     String accountName;  // name
     String currency;
-    String  iban;
+    String iban;
     String integrationCode;
     String BankId;  // id
     String schoolId; //schoolId
@@ -55,7 +53,7 @@ public class SP_API_09_Bahadir {
 
         reqSpec = new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)
-               .addCookies(cookies)
+                .addCookies(cookies)
                 .build();
 
     }
@@ -65,26 +63,16 @@ public class SP_API_09_Bahadir {
     public void CreateBankAccount() {
         Map<String, String> bankAccount = new HashMap<>();
 
-       accountName = faker.finance().iban() ;
+        accountName = faker.name().fullName();
+        iban = faker.finance().iban();
 
-        bankAccount.put("id","BankId");
+
         bankAccount.put("name", accountName);
-        bankAccount.put("iban","DE12911129");
-        bankAccount.put("integrationCode","E12");
-        bankAccount.put("currency","EUR");
-        bankAccount.put("active", "true");
-        bankAccount.put("schoolId","6390f3207a3bcb6a7ac977f9");
+        bankAccount.put("iban", iban);
+        bankAccount.put("integrationCode", "E12");
+        bankAccount.put("currency", "EUR");
+        bankAccount.put("schoolId", "6390f3207a3bcb6a7ac977f9");
 
-
-// {
-//    "id": null,
-//    "name": "haha",
-//    "iban": "DE1294847",
-//    "integrationCode": "France - 967",
-//    "currency": "KGS",
-//    "active": true,
-//    "schoolId": "6390f3207a3bcb6a7ac977f9"
-//}
 
         BankId = given()
                 .spec(reqSpec)
@@ -96,21 +84,21 @@ public class SP_API_09_Bahadir {
 
                 .then()
                 .statusCode(201)
+                .log().body()
                 .extract().path("id");
 
-        System.out.println("BankNo = " + BankId);
+        System.out.println("BankID = " + BankId);
     }
 
     @Test(dependsOnMethods = "CreateBankAccount")
     public void CreateBankAccountNegative() {
         Map<String, String> bankAccount = new HashMap<>();
-        bankAccount.put("id","BankId");
+
         bankAccount.put("name", accountName);
-        bankAccount.put("iban","DE12911129");
-        bankAccount.put("integrationCode","E12");
-        bankAccount.put("currency","EUR");
-        bankAccount.put("active", "true");
-        bankAccount.put("schoolId","6390f3207a3bcb6a7ac977f9");
+        bankAccount.put("iban", iban);
+        bankAccount.put("integrationCode", "E12");
+        bankAccount.put("currency", "EUR");
+        bankAccount.put("schoolId", "6390f3207a3bcb6a7ac977f9");
 
         given()
                 .spec(reqSpec)
@@ -127,17 +115,18 @@ public class SP_API_09_Bahadir {
 
     }
 
-   @Test(dependsOnMethods = "CreateBankAccountNegative")
+    @Test(dependsOnMethods = "CreateBankAccountNegative")
     public void UpdateBankAccount() {
-       Map<String, String> bankAccount = new HashMap<>();
+        Map<String, String> bankAccount = new HashMap<>();
+        accountName=faker.name().fullName();
+        iban=faker.finance().iban();
 
-       bankAccount.put("id","BankId");
-       bankAccount.put("name", "bahaBank");
-       bankAccount.put("iban","DE14531453");
-       bankAccount.put("integrationCode","E12");
-       bankAccount.put("currency","KZT");
-       bankAccount.put("active", "true");
-       bankAccount.put("schoolId", faker.idNumber().toString());
+        bankAccount.put("id", BankId);
+        bankAccount.put("name", accountName);
+        bankAccount.put("iban", iban);
+        bankAccount.put("integrationCode", "E12");
+        bankAccount.put("currency", "KZT");
+        bankAccount.put("schoolId", "6390f3207a3bcb6a7ac977f9");
 
 
         given()
@@ -145,7 +134,7 @@ public class SP_API_09_Bahadir {
                 .body(bankAccount)
 
                 .when()
-                .put("//school-service/api/bank-accounts")
+                .put("/school-service/api/bank-accounts")
 
                 .then()
                 .statusCode(200)
@@ -162,7 +151,7 @@ public class SP_API_09_Bahadir {
                 .pathParam("id", BankId)
 
                 .when()
-                .delete("/school-service/api/bank-accounts/{BankId}")
+                .delete("/school-service/api/bank-accounts/{id}")
 
                 .then()
                 .log().body()
@@ -177,12 +166,12 @@ public class SP_API_09_Bahadir {
                 .pathParam("id", BankId)
 
                 .when()
-                .delete("/school-service/api/bank-accounts/{BankId}")
+                .delete("/school-service/api/bank-accounts/{id}")
 
                 .then()
                 .log().body()
                 .statusCode(400)
-                .body("message",containsString("not  found"));
+                .body("message", containsString("must be exist"));
 
     }
 }
