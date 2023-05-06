@@ -14,7 +14,7 @@ import java.util.Map;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
-public class SP_API_01_Furkan {
+public class  SP_API_01_Furkan {
 
     Faker faker = new Faker();
     String posCatID;
