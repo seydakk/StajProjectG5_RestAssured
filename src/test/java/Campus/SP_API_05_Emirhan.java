@@ -23,8 +23,6 @@ public class SP_API_05_Emirhan {
     String positionName;
     String positionID;
 
-
-
     @BeforeClass
     public void login(){
         baseURI="https://test.mersys.io";
@@ -44,13 +42,11 @@ public class SP_API_05_Emirhan {
                         .log().all()
                         .statusCode(200)
                         .extract().response().getDetailedCookies();
-        ;
 
         reqSpec= new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)
                 .addCookies(cookies)
                 .build();
-
     }
     @Test
     public void createPositions() {
@@ -161,6 +157,5 @@ public class SP_API_05_Emirhan {
                 .statusCode(400)
         ;
     }
-
 
     }

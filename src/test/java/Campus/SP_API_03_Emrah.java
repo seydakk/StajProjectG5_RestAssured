@@ -50,26 +50,25 @@ public class SP_API_03_Emrah {
                 .addCookies(cookies)
                 .build();
     }
+
     @Test
-    public void createDocumentTypes () {
+    public void createDocumentTypes() {
 
-        Map<String, String> doctype = new HashMap<>();
+        Map<String, Object> doctype = new HashMap<>();
+        docName = faker.name().fullName();
+        String[] attachmentStages = new String[2];
+        attachmentStages[0] = "EXAMINATION";
+        attachmentStages[1] = "DISMISSAL";
 
-        doctype.put("id",null);
         doctype.put("name", docName);
         doctype.put("schoolId", "6390f3207a3bcb6a7ac977f9");
-        doctype.put("AttachmentStage", "EXAMINATION");
-        doctype.put("description", "");
-        doctype.put("active","true");
-        doctype.put("required","true");
-        doctype.put("use camera", "false");
-        doctype.put("translateName","");
+        doctype.put("attachmentStages", attachmentStages);
 
         docID =
                 given()
                         .spec(reqSpec)
                         .body(doctype)
-                        .log().body()
+                        //  .log().body()
 
                         .when()
                         .post("/school-service/api/attachments/create")
@@ -84,21 +83,22 @@ public class SP_API_03_Emrah {
     }
 
     @Test(dependsOnMethods = "createDocumentTypes")
-    public void updateDocumentTypes(){
+    public void updateDocumentTypes() {
 
-        Map<String, String> doctype = new HashMap<>();
+        Map<String, Object> doctype = new HashMap<>();
 
-        doctype.put("id",null);
+        docName = faker.name().fullName();
+
+        String[] attachmentStages = new String[2];
+        attachmentStages[0] = "EXAMINATION";
+
+
+        doctype.put("id", docID);
         doctype.put("name", docName);
         doctype.put("schoolId", "6390f3207a3bcb6a7ac977f9");
-        doctype.put("AttachmentStage", "EXAMINATION");
-        doctype.put("description", "");
-        doctype.put("active","true");
-        doctype.put("required","true");
-        doctype.put("use camera", "false");
-        doctype.put("translateName","");
+        doctype.put("attachmentStages", attachmentStages);
 
-       given()
+        given()
                 .spec(reqSpec)
                 .body(doctype)
                 .log().body()
@@ -109,9 +109,9 @@ public class SP_API_03_Emrah {
                 .then()
                 .log().body()
                 .statusCode(200)
-                .body("name", equalTo(docName))
-       ;
+                .body("name", equalTo(docName));
     }
+
     @Test(dependsOnMethods = "updateDocumentTypes")
     public void deleteDocumentTypes() {
 
@@ -121,14 +121,14 @@ public class SP_API_03_Emrah {
                 .log().uri()
 
                 .when()
-                .delete("/school-service/api/attachments/{documentID}")
+                .delete("/school-service/api/attachments/{id}")
 
                 .then()
                 .log().body()
 
-                .statusCode(200)
-        ;
+                .statusCode(200);
     }
+
     @Test(dependsOnMethods = "deleteDocumentTypes")
     public void deleteDocumentTypesNegative() {
 
@@ -138,13 +138,12 @@ public class SP_API_03_Emrah {
                 .log().uri()
 
                 .when()
-                .delete("/school-service/api/attachments/{documentID}")
+                .delete("/school-service/api/attachments/{id}")
 
                 .then()
                 .log().body()
 
                 .statusCode(400)
-                .body("message", equalTo("Attachment Type not found"))
-        ;
+                .body("message", equalTo("Attachment Type not found"));
     }
 }

@@ -17,16 +17,9 @@ import static org.hamcrest.Matchers.*;
 public class SP_API_10_Bahadir {
 
     Faker faker = new Faker();
-
     RequestSpecification reqSpec;
-
     String gradeId;  // id
     String gradeName;  // name
-    String shortName;
-    String nextGradeLevel ;
-    int order;
-
-
 
     @BeforeClass
     public void Setup() {
@@ -53,12 +46,11 @@ public class SP_API_10_Bahadir {
                 .setContentType(ContentType.JSON)
                 .addCookies(cookies)
                 .build();
-
     }
 
     @Test
     public void CreateGradeLevel() {
-        Map<String, String> gradeLevel = new HashMap<>();
+        Map<String, Object> gradeLevel = new HashMap<>();
         gradeName=faker.name().title().concat("12K");
 
         gradeLevel.put("id", null);   // id
@@ -66,17 +58,7 @@ public class SP_API_10_Bahadir {
         gradeLevel.put("shortName",faker.app().name()); //shortName
         gradeLevel.put("order",faker.number().digits(1)); //order
         gradeLevel.put("nextGradeLevel",gradeLevel.put("GL","GL+1"));
-        //{
-//    "id": null,
-//    "name": "merhat",
-//    "shortName": "mir",
-//    "nextGradeLevel": {
-//    "id": "63c059debff29b76b07e28f3"
-//    }    "id": null,
-//  "name": "{{$randomFullName}}",
-//  "shortName": "{{$randomUserName}}",
-//  "nextGradeLevel": null,
-//  "order": "{{$randomInt}}",
+
 
         gradeId = given()
                 .spec(reqSpec)
@@ -115,9 +97,7 @@ public class SP_API_10_Bahadir {
 
                 .then()
                 .statusCode(400)
-                .body("message", containsString("already"))
-        ;
-
+                .body("message", containsString("already"));
     }
 
     @Test(dependsOnMethods = "CreateGradeLevelNegative")
@@ -142,10 +122,7 @@ public class SP_API_10_Bahadir {
                 .log().body()
                 .statusCode(200)
                 .body("name", equalTo(gradeName));
-
-
     }
-
 
     @Test(dependsOnMethods = "UpdateGradeLevel")
     public void DeleteGradeLevel() {
@@ -175,6 +152,5 @@ public class SP_API_10_Bahadir {
                 .log().body()
                 .statusCode(400)
                 .body("message",containsString("Grade Level not found."));
-
     }
 }

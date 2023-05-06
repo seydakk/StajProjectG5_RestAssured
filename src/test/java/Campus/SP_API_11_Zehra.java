@@ -18,7 +18,6 @@ public class SP_API_11_Zehra {
 
     Faker faker = new Faker();
     RequestSpecification reqSpec;
-
     Map<String, String> newDiscount = new HashMap<>();
     String description;
     String integrationCode;
@@ -51,9 +50,7 @@ public class SP_API_11_Zehra {
                 .setContentType(ContentType.JSON)
                 .addCookies(cookies)
                 .build();
-
     }
-
 
     @Test
     public void createNewDiscount() {
@@ -66,8 +63,6 @@ public class SP_API_11_Zehra {
 
         priorityNo = faker.number().digits(1);
         newDiscount.put("priority", priorityNo);
-
-      //  newDiscount.put("tenantId","6390ef53f697997914ec20c2");
 
         discountID =
                 given()
@@ -83,10 +78,8 @@ public class SP_API_11_Zehra {
                         .statusCode(201)
                         .extract().path("id");
 
-
         System.out.println("id = " + discountID);
     }
-
 
     @Test(dependsOnMethods = "createNewDiscount")
     public void createNewDiscountNegative() {
@@ -103,14 +96,12 @@ public class SP_API_11_Zehra {
                 .extract().path("integrationCode");
     }
 
-
     @Test(dependsOnMethods = "createNewDiscountNegative")
     public void updateNewDiscount() {
 
         description=faker.number().digits(2);
         newDiscount.put("description", description);
         newDiscount.put("id",discountID);
-
 
         given()
                 .spec(reqSpec)
@@ -121,7 +112,6 @@ public class SP_API_11_Zehra {
                 .log().body()
                 .statusCode(200)
                 .body("description", equalTo(description));
-
     }
 
     @Test   (dependsOnMethods = "updateNewDiscount")
@@ -134,7 +124,6 @@ public class SP_API_11_Zehra {
                 .then()
                 .log().body()
                 .statusCode(200);
-
     }
 
     @Test(dependsOnMethods = "deleteNewDiscount")
@@ -148,5 +137,4 @@ public class SP_API_11_Zehra {
                 .log().body()
                 .statusCode(400);
     }
-
 }
