@@ -14,7 +14,7 @@ import java.util.Map;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
-public class SP_API_12_Seyda {
+public class  SP_API_12_Seyda {
 
     Faker faker = new Faker();
 
