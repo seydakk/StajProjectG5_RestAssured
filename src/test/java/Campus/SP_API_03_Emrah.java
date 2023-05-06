@@ -7,6 +7,7 @@ import io.restassured.http.Cookies;
 import io.restassured.specification.RequestSpecification;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.w3c.dom.DocumentType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,13 +18,15 @@ import static org.hamcrest.Matchers.*;
 public class SP_API_03_Emrah {
 
     Faker faker = new Faker();
-    String DocumentTypeID;
-    String DocumentTypeName;
+    String docID;
+    String docName;
     RequestSpecification reqSpec;
 
     @BeforeClass
     public void Login() {
+
         baseURI = "https://test.mersys.io";
+
         Map<String, String> userCredential = new HashMap<>();
         userCredential.put("username", "turkeyts");
         userCredential.put("password", "TechnoStudy123");
@@ -46,112 +49,102 @@ public class SP_API_03_Emrah {
                 .setContentType(ContentType.JSON)
                 .addCookies(cookies)
                 .build();
-
     }
-
     @Test
-    public void createdocumentTypes () {
+    public void createDocumentTypes () {
 
-        Map<String, String> DocumentType = new HashMap<>();
-        DocumentTypeName = faker.company().profession() + faker.number().digits(2);
-        DocumentType.put("name", DocumentTypeName);
+        Map<String, String> doctype = new HashMap<>();
 
-        DocumentTypeID =
+        doctype.put("id",null);
+        doctype.put("name", docName);
+        doctype.put("schoolId", "6390f3207a3bcb6a7ac977f9");
+        doctype.put("AttachmentStage", "EXAMINATION");
+        doctype.put("description", "");
+        doctype.put("active","true");
+        doctype.put("required","true");
+        doctype.put("use camera", "false");
+        doctype.put("translateName","");
+
+        docID =
                 given()
                         .spec(reqSpec)
-                        .body(DocumentType)
+                        .body(doctype)
                         .log().body()
 
                         .when()
-                        .post("/school-service/api/attachments")
+                        .post("/school-service/api/attachments/create")
 
                         .then()
                         .log().body()
+
                         .statusCode(201)
                         .extract().path("id");
 
-        System.out.println("countryID = " + DocumentTypeName);
+        System.out.println("docID = " + docName);
     }
 
-    @Test(dependsOnMethods = "createdocumentTypesNegative")
-    public void updatedocumentTypes() {
+    @Test(dependsOnMethods = "createDocumentTypes")
+    public void updateDocumentTypes(){
 
-        Map<String, String> country = new HashMap<>();
-        country.put("id", DocumentTypeName);
-        DocumentTypeName = "emre" + faker.number().digits(5);
-        country.put("name", DocumentTypeName);
+        Map<String, String> doctype = new HashMap<>();
 
-        given()
+        doctype.put("id",null);
+        doctype.put("name", docName);
+        doctype.put("schoolId", "6390f3207a3bcb6a7ac977f9");
+        doctype.put("AttachmentStage", "EXAMINATION");
+        doctype.put("description", "");
+        doctype.put("active","true");
+        doctype.put("required","true");
+        doctype.put("use camera", "false");
+        doctype.put("translateName","");
+
+       given()
                 .spec(reqSpec)
-                .body(country)
-                //  .log().body()
+                .body(doctype)
+                .log().body()
 
                 .when()
                 .put("/school-service/api/attachments")
 
                 .then()
-                .log().body() //gelen body i log olarak göster
+                .log().body()
                 .statusCode(200)
-                .body("name", equalTo(DocumentTypeName))
-        ;
-
+                .body("name", equalTo(docName))
+       ;
     }
-
-    @Test(dependsOnMethods = "updatedocumentTypes")
-    public void deletedocumentTypes() {
-
+    @Test(dependsOnMethods = "updateDocumentTypes")
+    public void deleteDocumentTypes() {
 
         given()
                 .spec(reqSpec)
-                .pathParam("DocumentTypeID", DocumentTypeID)
+                .pathParam("id", docID)
                 .log().uri()
 
                 .when()
                 .delete("/school-service/api/attachments/{documentID}")
 
                 .then()
-                .log().body() //gelen body i log olarak göster
-                .statusCode(204)
+                .log().body()
+
+                .statusCode(200)
         ;
-
     }
-
-    @Test(dependsOnMethods = "deletedocumentTypes")
-    public void deletedocumentTypesNegative() {
+    @Test(dependsOnMethods = "deleteDocumentTypes")
+    public void deleteDocumentTypesNegative() {
 
         given()
                 .spec(reqSpec)
-                .pathParam("DocumentTypeID", DocumentTypeID)
+                .pathParam("id", docID)
                 .log().uri()
 
                 .when()
-                .delete("/school-service/api/document-type/{attachments/{documentID}")
+                .delete("/school-service/api/attachments/{documentID}")
 
                 .then()
-                .log().body() //gelen body i log olarak göster
+                .log().body()
+
                 .statusCode(400)
                 .body("message", equalTo("Attachment Type not found"))
         ;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
