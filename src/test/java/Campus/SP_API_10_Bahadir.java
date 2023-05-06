@@ -1,6 +1,5 @@
 package Campus;
 
-
 import com.github.javafaker.Faker;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
@@ -22,20 +21,12 @@ public class SP_API_10_Bahadir {
     RequestSpecification reqSpec;
 
     String gradeId;  // id
-    String gradeLevel;  // name
+    String gradeName;  // name
     String shortName;
-    String  ngl;
+    String nextGradeLevel ;
     int order;
 
 
-
-    //{
-//    "id": null,
-//    "name": "merhat",
-//    "shortName": "mir",
-//    "nextGradeLevel": {
-//    "id": "63c059debff29b76b07e28f3"
-//    }
 
     @BeforeClass
     public void Setup() {
@@ -65,21 +56,27 @@ public class SP_API_10_Bahadir {
 
     }
 
-
     @Test
     public void CreateGradeLevel() {
         Map<String, String> gradeLevel = new HashMap<>();
+        gradeName=faker.name().title().concat("12K");
 
-        //gradeLevel =  faker.number().toString();
-
-
-        gradeLevel.put("name", "gradeLevel");
-        gradeLevel.put("id", null);
-        gradeLevel.put("name", "gradeLevelName");
-        gradeLevel.put("shortName","");
-        gradeLevel.put("order","1");
-        gradeLevel.put("nextGradeLevel","ngl");
-
+        gradeLevel.put("id", null);   // id
+        gradeLevel.put("name", gradeName);  //name
+        gradeLevel.put("shortName",faker.app().name()); //shortName
+        gradeLevel.put("order",faker.number().digits(1)); //order
+        gradeLevel.put("nextGradeLevel",gradeLevel.put("GL","GL+1"));
+        //{
+//    "id": null,
+//    "name": "merhat",
+//    "shortName": "mir",
+//    "nextGradeLevel": {
+//    "id": "63c059debff29b76b07e28f3"
+//    }    "id": null,
+//  "name": "{{$randomFullName}}",
+//  "shortName": "{{$randomUserName}}",
+//  "nextGradeLevel": null,
+//  "order": "{{$randomInt}}",
 
         gradeId = given()
                 .spec(reqSpec)
@@ -90,6 +87,7 @@ public class SP_API_10_Bahadir {
                 .post("/school-service/api/grade-levels")
 
                 .then()
+                .log().body()
                 .statusCode(201)
                 .extract().path("id");
 
@@ -100,10 +98,12 @@ public class SP_API_10_Bahadir {
     public void CreateGradeLevelNegative() {
         Map<String, String>gradeLevel = new HashMap<>();
 
-        gradeLevel.put("id", null);
-        gradeLevel.put("name", "gradeLevelName");
-        gradeLevel.put("shortName","");
-        gradeLevel.put("nextGradeLevel","ngl");
+
+        gradeLevel.put("id", null);   // id
+        gradeLevel.put("name", gradeName);  //name
+        gradeLevel.put("shortName",faker.app().name()); //shortName
+        gradeLevel.put("order",faker.number().digits(1)); //order
+        gradeLevel.put("nextGradeLevel",gradeLevel.put("GL","GL+1"));
 
         given()
                 .spec(reqSpec)
@@ -124,10 +124,11 @@ public class SP_API_10_Bahadir {
     public void UpdateGradeLevel() {
         Map<String, String> gradeLevel = new HashMap<>();
 
-        gradeLevel.put("id", null);
-        gradeLevel.put("name", "bahaLevel");
-        gradeLevel.put("shortName","taz");
-        gradeLevel.put("nextGradeLevel","tx");
+        gradeLevel.put("id", gradeId);   // id
+        gradeLevel.put("name", gradeName);  //name
+        gradeLevel.put("shortName",faker.app().name()+faker.number().digits(2)); //shortName
+        gradeLevel.put("order",faker.number().digits(1)); //order
+        gradeLevel.put("nextGradeLevel",gradeLevel.put("GL","GNL+1"));
 
 
         given()
@@ -138,9 +139,10 @@ public class SP_API_10_Bahadir {
                 .put("/school-service/api/grade-levels")
 
                 .then()
+                .log().body()
                 .statusCode(200)
-                .body("name", equalTo(gradeLevel))
-                .log().body();
+                .body("name", equalTo(gradeName));
+
 
     }
 
@@ -152,7 +154,7 @@ public class SP_API_10_Bahadir {
                 .pathParam("id", gradeId)
 
                 .when()
-                .delete("/school-service/api/grade-levels/{gradeId}")
+                .delete("/school-service/api/grade-levels/{id}")
 
                 .then()
                 .log().body()
@@ -167,12 +169,12 @@ public class SP_API_10_Bahadir {
                 .pathParam("id", gradeId)
 
                 .when()
-                .delete("/school-service/api/bank-accounts/{gradeId}")
+                .delete("/school-service/api/grade-levels/{id}")
 
                 .then()
                 .log().body()
                 .statusCode(400)
-                .body("message",containsString("not  found"));
+                .body("message",containsString("Grade Level not found."));
 
     }
 }
